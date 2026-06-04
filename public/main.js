@@ -4,6 +4,9 @@ const paisForm = document.getElementById("paisForm");
 const mensaje = document.getElementById("mensaje");
 const paisList = document.getElementById("paisList");
 const refreshButton = document.getElementById("refreshButton");
+const submitButton = document.getElementById("submitButton");
+const cancelEditButton = document.getElementById("cancelEditButton");
+const paisIdInput = document.getElementById("paisId");
 const formStatus = document.getElementById("formStatus");
 const countryCount = document.getElementById("countryCount");
 const emptyState = document.getElementById("emptyState");
@@ -43,9 +46,12 @@ const renderPaisList = (paises) => {
 
   paisList.innerHTML = paises
     .map((pais, index) => `
-      <li style="animation-delay: ${index * 80}ms">
-        <span>${pais.nombre}</span>
-        <strong>${pais.codigo}</strong>
+      <li class="pais-item" data-id="${pais.id}" style="animation-delay: ${index * 80}ms">
+        <div>
+          <span>${pais.nombre}</span>
+          <strong>${pais.codigo}</strong>
+        </div>
+        <button type="button" class="btn-edit" data-id="${pais.id}">Editar</button>
       </li>
     `)
     .join("");
@@ -104,10 +110,30 @@ const cargarUsuarios = async () => {
   }
 };
 
+const enterEditMode = (pais) => {
+  paisIdInput.value = pais.id;
+  paisForm.nombre.value = pais.nombre;
+  paisForm.codigo.value = pais.codigo;
+  submitButton.textContent = "Actualizar país";
+  cancelEditButton.style.display = "inline-block";
+  formStatus.textContent = "Editando";
+  formStatus.style.background = "rgba(59, 130, 246, 0.14)";
+};
+
+const exitEditMode = () => {
+  paisIdInput.value = "";
+  paisForm.reset();
+  submitButton.textContent = "Guardar país";
+  cancelEditButton.style.display = "none";
+  formStatus.textContent = "Listo";
+  formStatus.style.background = "rgba(99, 102, 241, 0.14)";
+};
+
 paisForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   mensaje.textContent = "";
 
+  const id = paisIdInput.value;
   const nombre = event.target.nombre.value.trim();
   const codigo = event.target.codigo.value.trim().toUpperCase();
 
@@ -116,9 +142,12 @@ paisForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    formStatus.textContent = "Guardando";
-    const res = await fetch(apiPaisBase, {
-      method: "POST",
+    formStatus.textContent = id ? "Actualizando" : "Guardando";
+    const url = id ? `${apiPaisBase}/${id}` : apiPaisBase;
+    const method = id ? "PATCH" : "POST";
+
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre, codigo })
     });
@@ -129,8 +158,14 @@ paisForm.addEventListener("submit", async (event) => {
     }
 
     await cargarPaises();
-    mostrarMensaje("País guardado correctamente.");
-    event.target.reset();
+    if (id) {
+      mostrarMensaje("País actualizado correctamente.");
+      console.log(`País actualizado: ${body.data?.nombre || nombre} (ID: ${body.data?.id || id})`);
+    } else {
+      mostrarMensaje("País guardado correctamente.");
+      console.log(`País añadido: ${body.nombre || nombre} (ID: ${body.id || 'desconocido'})`);
+    }
+    exitEditMode();
   } catch (error) {
     mostrarMensaje(error.message, false);
     console.error(error);
@@ -170,6 +205,18 @@ usuarioForm.addEventListener("submit", async (event) => {
   }
 });
 
+paisList.addEventListener("click", (event) => {
+  const button = event.target.closest("button.btn-edit");
+  if (!button) return;
+
+  const id = button.dataset.id;
+  const nombre = button.closest("li").querySelector("span").textContent;
+  const codigo = button.closest("li").querySelector("strong").textContent;
+
+  enterEditMode({ id, nombre, codigo });
+});
+
+cancelEditButton.addEventListener("click", exitEditMode);
 refreshButton.addEventListener("click", cargarPaises);
 refreshUsuariosButton.addEventListener("click", cargarUsuarios);
 window.addEventListener("load", () => {

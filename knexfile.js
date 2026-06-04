@@ -6,14 +6,13 @@
 module.exports = {
 
   development: {
-    client: 'mysql2',
-    connection: {
-      host: "127.0.0.1",
-      user:"root",
-      password:"",
-      database:"pedidosp"
-
-      
+    client: process.env.DB_CLIENT || 'mysql2',
+    connection: process.env.DATABASE_URL || {
+      host: process.env.DB_HOST || 'mysql',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || 'rootpw',
+      database: process.env.DB_NAME || 'pedidosp',
+      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306
     },
     migrations:{
       directory:"./migrations"

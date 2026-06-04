@@ -31,6 +31,8 @@
         </div>
 
         <form id="paisForm" class="pais-form">
+          <input type="hidden" id="paisId" name="id" value="" />
+
           <label for="nombre">Nombre del país</label>
           <input type="text" id="nombre" name="nombre" placeholder="Ecuador" required minlength="3" />
 
@@ -39,7 +41,8 @@
           <p class="field-hint">Ejemplo: EC, AR, US — no uses el código de teléfono.</p>
 
           <div class="controls">
-            <button type="submit" class="btn-primary">Guardar país</button>
+            <button type="submit" class="btn-primary" id="submitButton">Guardar país</button>
+            <button type="button" id="cancelEditButton" class="btn-secondary" style="display:none;">Cancelar edición</button>
             <button type="button" id="refreshButton" class="btn-secondary">Actualizar lista</button>
           </div>
         </form>
@@ -80,11 +83,13 @@
           </div>
           <span class="item-count" id="countryCount">0 países</span>
         </div>
+        <p class="field-hint">Para ver datos de la base en bruto, visita <a href="/debug" target="_blank">/debug</a> (solo para administrador).</p>
 
         <div class="list-shell">
           <ul id="paisList" class="pais-list"></ul>
           <div id="emptyState" class="empty-state">No hay países todavía. Agrega uno para comenzar.</div>
         </div>
+        <p class="field-hint" style="margin-top:1rem;">Haz clic en un país para cargar sus datos y editarlo.</p>
       </section>
 
       <section class="card list-card" aria-labelledby="user-list-title">

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso a Base de Datos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Acceso seguro</p>
+        <h1>Ver datos de la base</h1>
+        <p class="hero-copy">Ingresa las credenciales para acceder al resumen seguro de la base de datos.</p>
+      </div>
+      <div class="hero-badge">API: <span>/api/debug</span></div>
+    </header>
+
+    <main class="container">
+      <section class="card form-card" aria-labelledby="debug-title">
+        <div class="card-header">
+          <div>
+            <p class="subtitle">Autenticación</p>
+            <h2 id="debug-title">Usuario y contraseña</h2>
+          </div>
+          <span class="status-badge" id="debugStatus">Listo</span>
+        </div>
+
+        <form id="debugForm" class="pais-form">
+          <label for="debugUser">Usuario</label>
+          <input type="text" id="debugUser" name="usuario" placeholder="Ingresa tu usuario" required />
+
+          <label for="debugPassword">Contraseña</label>
+          <input type="password" id="debugPassword" name="contrasena" placeholder="Ingresa tu contraseña" required />
+
+          <div class="controls">
+            <button type="submit" class="btn-primary">Ver base de datos</button>
+            <a class="btn-secondary" href="/" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">Volver</a>
+          </div>
+        </form>
+
+        <p id="debugMessage" class="message"></p>
+      </section>
+
+      <section class="card list-card" id="debugResult" style="display:none;" aria-labelledby="debug-result-title">
+        <div class="card-header">
+          <div>
+            <p class="subtitle">Resumen</p>
+            <h2 id="debug-result-title">Datos de la base</h2>
+          </div>
+          <span class="item-count" id="debugTotals">Cargando...</span>
+        </div>
+
+        <pre id="debugOutput" style="white-space: pre-wrap; word-break: break-word; margin-top: 16px; color: #e2e8f0;"></pre>
+      </section>
+    </main>
+  </div>
+  <script src="debug.js"></script>
+</body>
+</html>

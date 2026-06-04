@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Países</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Administración</p>
+        <h1>Panel de países y usuarios</h1>
+        <p class="hero-copy">Agrega y visualiza países y usuarios desde la misma interfaz.</p>
+      </div>
+      <div class="hero-badge">API: <span>/api/pais</span> / <span>/api/usuario</span></div>
+    </header>
+
+    <main class="container">
+      <section class="card form-card" aria-labelledby="form-title">
+        <div class="card-header">
+          <div>
+            <p class="subtitle">Formulario</p>
+            <h2 id="form-title">Agregar nuevo país</h2>
+          </div>
+          <span class="status-badge" id="formStatus">Listo</span>
+        </div>
+
+        <form id="paisForm" class="pais-form">
+          <label for="nombre">Nombre del país</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Ecuador" required minlength="3" />
+
+          <label for="codigo">Código ISO del país</label>
+          <input type="text" id="codigo" name="codigo" placeholder="EC" required maxlength="2" minlength="2" />
+          <p class="field-hint">Ejemplo: EC, AR, US — no uses el código de teléfono.</p>
+
+          <div class="controls">
+            <button type="submit" class="btn-primary">Guardar país</button>
+            <button type="button" id="refreshButton" class="btn-secondary">Actualizar lista</button>
+          </div>
+        </form>
+
+        <p id="mensaje" class="message"></p>
+      </section>
+
+      <section class="card form-card" aria-labelledby="user-form-title">
+        <div class="card-header">
+          <div>
+            <p class="subtitle">Formulario</p>
+            <h2 id="user-form-title">Agregar nuevo usuario</h2>
+          </div>
+          <span class="status-badge" id="formStatusUsuario">Listo</span>
+        </div>
+
+        <form id="usuarioForm" class="pais-form">
+          <label for="usuarioNombre">Nombre del usuario</label>
+          <input type="text" id="usuarioNombre" name="nombre" placeholder="Juan Pérez" required minlength="3" />
+
+          <label for="usuarioCorreo">Correo electrónico</label>
+          <input type="email" id="usuarioCorreo" name="correo" placeholder="juan@correo.com" required />
+
+          <div class="controls">
+            <button type="submit" class="btn-primary">Guardar usuario</button>
+            <button type="button" id="refreshUsuariosButton" class="btn-secondary">Actualizar usuarios</button>
+          </div>
+        </form>
+
+        <p id="mensajeUsuario" class="message"></p>
+      </section>
+
+      <section class="card list-card" aria-labelledby="list-title">
+        <div class="card-header">
+          <div>
+            <p class="subtitle">Lista dinámica</p>
+            <h2 id="list-title">Países registrados</h2>
+          </div>
+          <span class="item-count" id="countryCount">0 países</span>
+        </div>
+
+        <div class="list-shell">
+          <ul id="paisList" class="pais-list"></ul>
+          <div id="emptyState" class="empty-state">No hay países todavía. Agrega uno para comenzar.</div>
+        </div>
+      </section>
+
+      <section class="card list-card" aria-labelledby="user-list-title">
+        <div class="card-header">
+          <div>
+            <p class="subtitle">Lista dinámica</p>
+            <h2 id="user-list-title">Usuarios registrados</h2>
+          </div>
+          <span class="item-count" id="userCount">0 usuarios</span>
+        </div>
+
+        <div class="list-shell">
+          <ul id="usuarioList" class="usuario-list"></ul>
+          <div id="emptyUserState" class="empty-state">No hay usuarios todavía. Agrega uno para comenzar.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

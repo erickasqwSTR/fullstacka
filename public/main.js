@@ -221,7 +221,7 @@ usuarioForm.addEventListener("submit", async (event) => {
     const id = usuarioIdInput.value;
     formStatusUsuario.textContent = id ? "Actualizando" : "Guardando";
     const url = id ? `${apiUsuarioBase}/${id}` : apiUsuarioBase;
-    const method = id ? "PATCH" : "POST";
+    const method = id ? "PUT" : "POST";
     console.log("Enviar usuario:", { id, nombre, correo, method, url });
 
     const res = await fetch(url, {

@@ -15,6 +15,16 @@ const listarPaises = async (req, res) => {
 const insertarPais = async (req, res) => {
     try {
         const { nombre, codigo } = req.body;
+        
+        // Verificar si ya existe un país con el mismo nombre
+        const paisExistente = await Pais.query().where('nombre', nombre).first();
+        if (paisExistente) {
+            return res.status(409).json({ 
+                error: `El país "${nombre}" ya existe en la base de datos`, 
+                mensaje: "Error: país duplicado" 
+            });
+        }
+        
         const resultado = await Pais.query().insert({ nombre, codigo });
         console.log(`País añadido: ${resultado.nombre} (ID: ${resultado.id})`);
         res.status(201).json(resultado);
@@ -24,35 +34,42 @@ const insertarPais = async (req, res) => {
     }
 };
 
-// PATCH - Actualizar parcialmente un país (NUEVO)
+// PATCH - Actualizar parcialmente un país
 const actualizarPais = async (req, res) => {
     try {
         const { id } = req.params;
-        const datosAActualizar = req.body;
+        const { nombre, codigo } = req.body;
 
-        // 1. Modificamos el registro usando .patch().findById()
-        // Esto devuelve la cantidad de filas afectadas (1 si lo encontró y cambió, 0 si no existe)
-        const filasActualizadas = await Pais.query()
-            .findById(id)
-            .patch(datosAActualizar);
-
-        // 2. Si es 0, en lugar de 404 hacemos un "upsert" simple: insertamos
-        if (filasActualizadas === 0) {
-            // Intentar crear un nuevo país con los datos enviados
-            const nuevoPais = await Pais.query().insert(datosAActualizar);
-            console.log(`País no encontrado. Se añadió uno nuevo: ${nuevoPais.nombre} (ID: ${nuevoPais.id})`);
-            return res.status(201).json({ mensaje: "País no encontrado: se creó uno nuevo", data: nuevoPais });
+        // Verificar si el país existe
+        const paisActual = await Pais.query().findById(id);
+        if (!paisActual) {
+            return res.status(404).json({ mensaje: "País no encontrado" });
         }
 
-        // 3. Si se actualizó, buscamos el registro fresco para devolvérselo al cliente
-        const paisActualizado = await Pais.query().findById(id);
-        console.log(`País actualizado: ${paisActualizado.nombre} (ID: ${paisActualizado.id})`);
+        // Verificar si el nuevo nombre ya existe (pero no en el mismo país)
+        if (nombre && nombre !== paisActual.nombre) {
+            const paisDuplicado = await Pais.query().where('nombre', nombre).first();
+            if (paisDuplicado) {
+                return res.status(409).json({ 
+                    error: `El país "${nombre}" ya existe en la base de datos`, 
+                    mensaje: "Error: país duplicado" 
+                });
+            }
+        }
 
+        // Actualizar el país
+        const datosAActualizar = {};
+        if (nombre) datosAActualizar.nombre = nombre;
+        if (codigo) datosAActualizar.codigo = codigo;
+
+        await Pais.query().findById(id).patch(datosAActualizar);
+        const paisActualizado = await Pais.query().findById(id);
+
+        console.log(`País actualizado: ${paisActualizado.nombre} (ID: ${paisActualizado.id})`);
         res.status(200).json({
             mensaje: "País actualizado con éxito",
             data: paisActualizado
         });
-
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message, mensaje: "Error al actualizar país" });

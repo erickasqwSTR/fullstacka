@@ -12,9 +12,11 @@ const countryCount = document.getElementById("countryCount");
 const emptyState = document.getElementById("emptyState");
 
 const usuarioForm = document.getElementById("usuarioForm");
+const usuarioIdInput = document.getElementById("usuarioId");
 const mensajeUsuario = document.getElementById("mensajeUsuario");
 const usuarioList = document.getElementById("usuarioList");
 const refreshUsuariosButton = document.getElementById("refreshUsuariosButton");
+const cancelEditUsuarioButton = document.getElementById("cancelEditUsuarioButton");
 const formStatusUsuario = document.getElementById("formStatusUsuario");
 const userCount = document.getElementById("userCount");
 const emptyUserState = document.getElementById("emptyUserState");
@@ -70,9 +72,12 @@ const renderUsuarioList = (usuarios) => {
 
   usuarioList.innerHTML = usuarios
     .map((usuario, index) => `
-      <li style="animation-delay: ${index * 80}ms">
-        <span>${usuario.nombre}</span>
-        <strong>${usuario.correo}</strong>
+      <li class="usuario-item" data-id="${usuario.id}" style="animation-delay: ${index * 80}ms">
+        <div>
+          <span>${usuario.nombre}</span>
+          <strong>${usuario.correo}</strong>
+        </div>
+        <button type="button" class="btn-edit" data-id="${usuario.id}">Editar</button>
       </li>
     `)
     .join("");
@@ -129,6 +134,25 @@ const exitEditMode = () => {
   cancelEditButton.style.display = "none";
   formStatus.textContent = "Listo";
   formStatus.style.background = "rgba(99, 102, 241, 0.14)";
+};
+
+const enterUsuarioEditMode = (usuario) => {
+  usuarioIdInput.value = usuario.id;
+  usuarioForm.nombre.value = usuario.nombre;
+  usuarioForm.correo.value = usuario.correo;
+  usuarioForm.querySelector('button[type="submit"]').textContent = "Actualizar usuario";
+  cancelEditUsuarioButton.style.display = "inline-block";
+  formStatusUsuario.textContent = "Editando";
+  formStatusUsuario.style.background = "rgba(59, 130, 246, 0.14)";
+};
+
+const exitUsuarioEditMode = () => {
+  usuarioIdInput.value = "";
+  usuarioForm.reset();
+  usuarioForm.querySelector('button[type="submit"]').textContent = "Guardar usuario";
+  cancelEditUsuarioButton.style.display = "none";
+  formStatusUsuario.textContent = "Listo";
+  formStatusUsuario.style.background = "rgba(99, 102, 241, 0.14)";
 };
 
 paisForm.addEventListener("submit", async (event) => {
@@ -190,9 +214,13 @@ usuarioForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    formStatusUsuario.textContent = "Guardando";
-    const res = await fetch(apiUsuarioBase, {
-      method: "POST",
+    const id = usuarioIdInput.value;
+    formStatusUsuario.textContent = id ? "Actualizando" : "Guardando";
+    const url = id ? `${apiUsuarioBase}/${id}` : apiUsuarioBase;
+    const method = id ? "PATCH" : "POST";
+
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre, correo })
     });
@@ -206,7 +234,12 @@ usuarioForm.addEventListener("submit", async (event) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     await cargarUsuarios();
-    mostrarMensajeUsuario("Usuario guardado correctamente.");
+    if (id) {
+      mostrarMensajeUsuario("Usuario actualizado correctamente.");
+    } else {
+      mostrarMensajeUsuario("Usuario guardado correctamente.");
+    }
+    exitUsuarioEditMode();
     event.target.reset();
   } catch (error) {
     mostrarMensajeUsuario(error.message, false);
@@ -226,7 +259,19 @@ paisList.addEventListener("click", (event) => {
   enterEditMode({ id, nombre, codigo });
 });
 
+usuarioList.addEventListener("click", (event) => {
+  const button = event.target.closest("button.btn-edit");
+  if (!button) return;
+
+  const id = button.dataset.id;
+  const nombre = button.closest("li").querySelector("span").textContent;
+  const correo = button.closest("li").querySelector("strong").textContent;
+
+  enterUsuarioEditMode({ id, nombre, correo });
+});
+
 cancelEditButton.addEventListener("click", exitEditMode);
+cancelEditUsuarioButton.addEventListener("click", exitUsuarioEditMode);
 refreshButton.addEventListener("click", cargarPaises);
 refreshUsuariosButton.addEventListener("click", cargarUsuarios);
 window.addEventListener("load", () => {

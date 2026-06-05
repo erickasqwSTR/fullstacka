@@ -60,6 +60,8 @@
         </div>
 
         <form id="usuarioForm" class="pais-form">
+          <input type="hidden" id="usuarioId" name="id" value="" />
+
           <label for="usuarioNombre">Nombre del usuario</label>
           <input type="text" id="usuarioNombre" name="nombre" placeholder="Juan Pérez" required minlength="3" />
 
@@ -68,6 +70,7 @@
 
           <div class="controls">
             <button type="submit" class="btn-primary">Guardar usuario</button>
+            <button type="button" id="cancelEditUsuarioButton" class="btn-secondary" style="display:none;">Cancelar edición</button>
             <button type="button" id="refreshUsuariosButton" class="btn-secondary">Actualizar usuarios</button>
           </div>
         </form>
@@ -109,6 +112,6 @@
     </main>
   </div>
 
-  <script src="main.js"></script>
+  <script src="main.js?v=2"></script>
 </body>
 </html>

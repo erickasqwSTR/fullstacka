@@ -13,6 +13,7 @@ const listarUsuarios = async (req, res) => {
 const insertarUsuario = async (req, res) => {
   try {
     const { nombre, correo } = req.body;
+    console.log("insertarUsuario", { nombre, correo });
     
     // Verificar si ya existe un usuario con el mismo correo
     const usuarioExistente = await Usuario.query().where('correo', correo).first();
@@ -32,7 +33,40 @@ const insertarUsuario = async (req, res) => {
   }
 };
 
+const actualizarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, correo } = req.body;
+    console.log("actualizarUsuario", { id, nombre, correo });
+
+    const usuario = await Usuario.query().findById(id);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado", mensaje: "Error: usuario no existe" });
+    }
+
+    const correoExistente = await Usuario.query()
+      .where('correo', correo)
+      .whereNot('id', id)
+      .first();
+
+    if (correoExistente) {
+      return res.status(409).json({ 
+        error: `El correo "${correo}" ya está registrado en otro usuario`, 
+        mensaje: "Error: correo duplicado" 
+      });
+    }
+
+    const actualizado = await Usuario.query().patchAndFetchById(id, { nombre, correo });
+    console.log(`Usuario actualizado: ${actualizado.nombre} (ID: ${actualizado.id})`);
+    res.json({ mensaje: "Usuario actualizado correctamente", data: actualizado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message, mensaje: "Error al actualizar usuario" });
+  }
+};
+
 module.exports = {
   listarUsuarios,
-  insertarUsuario
+  insertarUsuario,
+  actualizarUsuario
 };

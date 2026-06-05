@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const compression = require('compression');
 const morgan = require('morgan');
@@ -8,6 +9,9 @@ require('dotenv').config();
 require('./src/config/db');
 
 const app = express();
+
+// Servir archivos estáticos desde public
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middlewares
 app.use(morgan('dev'));
@@ -22,7 +26,9 @@ app.use('/api/saludo', require('./src/routes/saludo.routes'));
 app.use('/api/debug', require('./src/routes/debug.routes'));
 
 // Ruta de prueba
-app.get('/', (req, res) => res.send('Servidor Activo y Conectado'));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Manejador de errores global
 app.use((err, req, res, next) => {

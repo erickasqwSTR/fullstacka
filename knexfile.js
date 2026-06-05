@@ -13,7 +13,16 @@ const {
 
 const DATABASE_URL = (process.env.DATABASE_URL || process.env.MYSQL_ADDON_URI || '').trim();
 const useSsl = DB_SSL.toLowerCase() === 'true';
-const client = DB_CLIENT?.trim() || 'mysql2';
+
+const normalizeClient = (rawClient) => {
+  const normalized = rawClient?.trim().toLowerCase();
+  if (!normalized || normalized === 'mysql' || normalized === 'mysql2' || normalized === 'mysql12') {
+    return 'mysql2';
+  }
+  return normalized;
+};
+
+const client = normalizeClient(DB_CLIENT);
 
 const parseDatabaseUrl = (databaseUrl) => {
   const url = new URL(databaseUrl);

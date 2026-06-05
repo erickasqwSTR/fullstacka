@@ -84,6 +84,7 @@ const cargarPaises = async () => {
     const res = await fetch(apiPaisBase);
     if (!res.ok) throw new Error("No se pudo cargar la lista de países.");
     const paises = await res.json();
+    console.log("Países cargados:", paises);
     renderPaisList(paises);
     formStatus.textContent = "Listo";
     formStatus.style.background = "rgba(99, 102, 241, 0.14)";
@@ -100,6 +101,7 @@ const cargarUsuarios = async () => {
     const res = await fetch(apiUsuarioBase);
     if (!res.ok) throw new Error("No se pudo cargar la lista de usuarios.");
     const usuarios = await res.json();
+    console.log("Usuarios cargados:", usuarios);
     renderUsuarioList(usuarios);
     formStatusUsuario.textContent = "Listo";
     formStatusUsuario.style.background = "rgba(99, 102, 241, 0.14)";
@@ -157,6 +159,9 @@ paisForm.addEventListener("submit", async (event) => {
       throw new Error(body.mensaje || body.error || "Error al guardar país.");
     }
 
+    // Pequeño delay para asegurar que la BD sincronice
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     await cargarPaises();
     if (id) {
       mostrarMensaje("País actualizado correctamente.");
@@ -168,6 +173,7 @@ paisForm.addEventListener("submit", async (event) => {
     exitEditMode();
   } catch (error) {
     mostrarMensaje(error.message, false);
+    formStatus.textContent = "Error";
     console.error(error);
   }
 });
@@ -196,11 +202,15 @@ usuarioForm.addEventListener("submit", async (event) => {
       throw new Error(body.mensaje || body.error || "Error al guardar usuario.");
     }
 
+    // Pequeño delay para asegurar que la BD sincronice
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     await cargarUsuarios();
     mostrarMensajeUsuario("Usuario guardado correctamente.");
     event.target.reset();
   } catch (error) {
     mostrarMensajeUsuario(error.message, false);
+    formStatusUsuario.textContent = "Error";
     console.error(error);
   }
 });

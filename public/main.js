@@ -12,6 +12,7 @@ const countryCount = document.getElementById("countryCount");
 const emptyState = document.getElementById("emptyState");
 
 const usuarioForm = document.getElementById("usuarioForm");
+const usuarioFormTitle = document.getElementById("user-form-title");
 const usuarioIdInput = document.getElementById("usuarioId");
 const mensajeUsuario = document.getElementById("mensajeUsuario");
 const usuarioList = document.getElementById("usuarioList");
@@ -141,6 +142,7 @@ const enterUsuarioEditMode = (usuario) => {
   usuarioIdInput.value = usuario.id;
   usuarioForm.nombre.value = usuario.nombre;
   usuarioForm.correo.value = usuario.correo;
+  usuarioFormTitle.textContent = "Editar usuario";
   usuarioForm.querySelector('button[type="submit"]').textContent = "Actualizar usuario";
   cancelEditUsuarioButton.style.display = "inline-block";
   formStatusUsuario.textContent = "Editando";
@@ -150,6 +152,7 @@ const enterUsuarioEditMode = (usuario) => {
 const exitUsuarioEditMode = () => {
   usuarioIdInput.value = "";
   usuarioForm.reset();
+  usuarioFormTitle.textContent = "Agregar nuevo usuario";
   usuarioForm.querySelector('button[type="submit"]').textContent = "Guardar usuario";
   cancelEditUsuarioButton.style.display = "none";
   formStatusUsuario.textContent = "Listo";

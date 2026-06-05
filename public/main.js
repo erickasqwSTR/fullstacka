@@ -137,6 +137,7 @@ const exitEditMode = () => {
 };
 
 const enterUsuarioEditMode = (usuario) => {
+  console.log("Editar usuario:", usuario);
   usuarioIdInput.value = usuario.id;
   usuarioForm.nombre.value = usuario.nombre;
   usuarioForm.correo.value = usuario.correo;
@@ -218,6 +219,7 @@ usuarioForm.addEventListener("submit", async (event) => {
     formStatusUsuario.textContent = id ? "Actualizando" : "Guardando";
     const url = id ? `${apiUsuarioBase}/${id}` : apiUsuarioBase;
     const method = id ? "PATCH" : "POST";
+    console.log("Enviar usuario:", { id, nombre, correo, method, url });
 
     const res = await fetch(url, {
       method,

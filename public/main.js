@@ -54,7 +54,10 @@ const renderPaisList = (paises) => {
           <span>${pais.nombre}</span>
           <strong>${pais.codigo}</strong>
         </div>
-        <button type="button" class="btn-edit" data-id="${pais.id}">Editar</button>
+        <div class="btn-group">
+          <button type="button" class="btn-edit" data-id="${pais.id}">Editar</button>
+          <button type="button" class="btn-delete" data-id="${pais.id}">Eliminar</button>
+        </div>
       </li>
     `)
     .join("");
@@ -78,7 +81,10 @@ const renderUsuarioList = (usuarios) => {
           <span>${usuario.nombre}</span>
           <strong>${usuario.correo}</strong>
         </div>
-        <button type="button" class="btn-edit" data-id="${usuario.id}">Editar</button>
+        <div class="btn-group">
+          <button type="button" class="btn-edit" data-id="${usuario.id}">Editar</button>
+          <button type="button" class="btn-delete" data-id="${usuario.id}">Eliminar</button>
+        </div>
       </li>
     `)
     .join("");
@@ -157,6 +163,38 @@ const exitUsuarioEditMode = () => {
   cancelEditUsuarioButton.style.display = "none";
   formStatusUsuario.textContent = "Listo";
   formStatusUsuario.style.background = "rgba(99, 102, 241, 0.14)";
+};
+
+const eliminarPais = async (id) => {
+  if (!confirm("¿Eliminar este país?")) return;
+  try {
+    const res = await fetch(`${apiPaisBase}/${id}`, { method: "DELETE" });
+    const body = await res.json();
+    if (!res.ok) {
+      throw new Error(body.mensaje || body.error || "Error al eliminar país.");
+    }
+    mostrarMensaje(body.mensaje || "País eliminado correctamente.");
+    await cargarPaises();
+  } catch (error) {
+    mostrarMensaje(error.message, false);
+    console.error(error);
+  }
+};
+
+const eliminarUsuario = async (id) => {
+  if (!confirm("¿Eliminar este usuario?")) return;
+  try {
+    const res = await fetch(`${apiUsuarioBase}/${id}`, { method: "DELETE" });
+    const body = await res.json();
+    if (!res.ok) {
+      throw new Error(body.mensaje || body.error || "Error al eliminar usuario.");
+    }
+    mostrarMensajeUsuario(body.mensaje || "Usuario eliminado correctamente.");
+    await cargarUsuarios();
+  } catch (error) {
+    mostrarMensajeUsuario(error.message, false);
+    console.error(error);
+  }
 };
 
 paisForm.addEventListener("submit", async (event) => {
@@ -254,23 +292,35 @@ usuarioForm.addEventListener("submit", async (event) => {
 });
 
 paisList.addEventListener("click", (event) => {
-  const button = event.target.closest("button.btn-edit");
-  if (!button) return;
+  const deleteButton = event.target.closest("button.btn-delete");
+  if (deleteButton) {
+    eliminarPais(deleteButton.dataset.id);
+    return;
+  }
 
-  const id = button.dataset.id;
-  const nombre = button.closest("li").querySelector("span").textContent;
-  const codigo = button.closest("li").querySelector("strong").textContent;
+  const editButton = event.target.closest("button.btn-edit");
+  if (!editButton) return;
+
+  const id = editButton.dataset.id;
+  const nombre = editButton.closest("li").querySelector("span").textContent;
+  const codigo = editButton.closest("li").querySelector("strong").textContent;
 
   enterEditMode({ id, nombre, codigo });
 });
 
 usuarioList.addEventListener("click", (event) => {
-  const button = event.target.closest("button.btn-edit");
-  if (!button) return;
+  const deleteButton = event.target.closest("button.btn-delete");
+  if (deleteButton) {
+    eliminarUsuario(deleteButton.dataset.id);
+    return;
+  }
 
-  const id = button.dataset.id;
-  const nombre = button.closest("li").querySelector("span").textContent;
-  const correo = button.closest("li").querySelector("strong").textContent;
+  const editButton = event.target.closest("button.btn-edit");
+  if (!editButton) return;
+
+  const id = editButton.dataset.id;
+  const nombre = editButton.closest("li").querySelector("span").textContent;
+  const correo = editButton.closest("li").querySelector("strong").textContent;
 
   enterUsuarioEditMode({ id, nombre, correo });
 });

@@ -16,12 +16,20 @@ const insertarPais = async (req, res) => {
     try {
         const { nombre, codigo } = req.body;
         
-        // Verificar si ya existe un país con el mismo nombre
-        const paisExistente = await Pais.query().where('nombre', nombre).first();
-        if (paisExistente) {
+        // Verificar si ya existe un país con el mismo nombre o código
+        const paisNombreExistente = await Pais.query().where('nombre', nombre).first();
+        if (paisNombreExistente) {
             return res.status(409).json({ 
                 error: `El país "${nombre}" ya existe en la base de datos`, 
                 mensaje: "Error: país duplicado" 
+            });
+        }
+
+        const paisCodigoExistente = await Pais.query().where('codigo', codigo).first();
+        if (paisCodigoExistente) {
+            return res.status(409).json({ 
+                error: `El código ISO "${codigo}" ya está registrado para otro país`, 
+                mensaje: "Error: código duplicado" 
             });
         }
         
@@ -46,13 +54,29 @@ const actualizarPais = async (req, res) => {
             return res.status(404).json({ mensaje: "País no encontrado" });
         }
 
-        // Verificar si el nuevo nombre ya existe (pero no en el mismo país)
+        // Verificar duplicados en nombre y código
         if (nombre && nombre !== paisActual.nombre) {
-            const paisDuplicado = await Pais.query().where('nombre', nombre).first();
-            if (paisDuplicado) {
+            const paisNombreDuplicado = await Pais.query()
+                .where('nombre', nombre)
+                .whereNot('id', id)
+                .first();
+            if (paisNombreDuplicado) {
                 return res.status(409).json({ 
                     error: `El país "${nombre}" ya existe en la base de datos`, 
                     mensaje: "Error: país duplicado" 
+                });
+            }
+        }
+
+        if (codigo && codigo !== paisActual.codigo) {
+            const paisCodigoDuplicado = await Pais.query()
+                .where('codigo', codigo)
+                .whereNot('id', id)
+                .first();
+            if (paisCodigoDuplicado) {
+                return res.status(409).json({ 
+                    error: `El código ISO "${codigo}" ya está registrado para otro país`, 
+                    mensaje: "Error: código duplicado" 
                 });
             }
         }

@@ -144,7 +144,7 @@ input {
 
 .hero-visual {
   position: relative;
-  min-width: 320px;
+  min-width: 340px;
   display: grid;
   justify-items: end;
   animation: floatIn 0.9s ease both;
@@ -152,14 +152,59 @@ input {
 
 .hero-ring {
   position: absolute;
-  top: -32px;
-  right: -32px;
+  top: 0;
+  right: 0;
+  transform: translate(20%, -8%);
   width: 220px;
   height: 220px;
   border-radius: 50%;
   border: 2px solid rgba(99, 102, 241, 0.18);
   box-shadow: 0 0 60px rgba(79, 70, 229, 0.12);
   animation: pulseRing 3.8s ease-in-out infinite;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.hero-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.95);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+  opacity: 0.9;
+  animation: particleMove 2.6s linear infinite;
+}
+
+.hero-particle:nth-child(1) {
+  top: 20%;
+  left: 50%;
+  animation-delay: 0s;
+}
+
+.hero-particle:nth-child(2) {
+  top: 45%;
+  left: 80%;
+  animation-delay: 0.42s;
+}
+
+.hero-particle:nth-child(3) {
+  top: 75%;
+  left: 60%;
+  animation-delay: 0.85s;
+}
+
+.hero-particle:nth-child(4) {
+  top: 72%;
+  left: 30%;
+  animation-delay: 1.2s;
+}
+
+.hero-particle:nth-child(5) {
+  top: 38%;
+  left: 18%;
+  animation-delay: 1.6s;
 }
 
 .hero-card {
@@ -173,6 +218,21 @@ input {
   box-shadow: 0 28px 60px rgba(15, 23, 42, 0.25);
   backdrop-filter: blur(18px);
   overflow: hidden;
+}
+
+@keyframes particleMove {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-10px, -14px) scale(1.25);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(8px, 10px) scale(1);
+    opacity: 0.9;
+  }
 }
 
 .hero-card::before {

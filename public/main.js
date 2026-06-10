@@ -21,12 +21,31 @@ const cancelEditUsuarioButton = document.getElementById("cancelEditUsuarioButton
 const formStatusUsuario = document.getElementById("formStatusUsuario");
 const userCount = document.getElementById("userCount");
 const emptyUserState = document.getElementById("emptyUserState");
+const heroRing = document.querySelector(".hero-ring");
+
+const setHeroState = (state) => {
+  if (!heroRing) return;
+  heroRing.classList.toggle("loading", state === "loading");
+  heroRing.classList.toggle("error", state === "error");
+};
+
+const clearHeroState = () => setHeroState("default");
+
+const setHeroError = () => {
+  setHeroState("error");
+  setTimeout(clearHeroState, 1600);
+};
 
 const mostrarMensaje = (texto, success = true) => {
   mensaje.textContent = texto;
   mensaje.style.color = success ? "#22c55e" : "#ef4444";
   formStatus.textContent = success ? "Correcto" : "Error";
   formStatus.style.background = success ? "rgba(34, 197, 94, 0.14)" : "rgba(239, 68, 68, 0.14)";
+  if (success) {
+    clearHeroState();
+  } else {
+    setHeroError();
+  }
 };
 
 const mostrarMensajeUsuario = (texto, success = true) => {
@@ -34,6 +53,11 @@ const mostrarMensajeUsuario = (texto, success = true) => {
   mensajeUsuario.style.color = success ? "#22c55e" : "#ef4444";
   formStatusUsuario.textContent = success ? "Correcto" : "Error";
   formStatusUsuario.style.background = success ? "rgba(34, 197, 94, 0.14)" : "rgba(239, 68, 68, 0.14)";
+  if (success) {
+    clearHeroState();
+  } else {
+    setHeroError();
+  }
 };
 
 const renderPaisList = (paises) => {
@@ -210,6 +234,7 @@ paisForm.addEventListener("submit", async (event) => {
   }
 
   try {
+    setHeroState("loading");
     formStatus.textContent = id ? "Actualizando" : "Guardando";
     const url = id ? `${apiPaisBase}/${id}` : apiPaisBase;
     const method = id ? "PATCH" : "POST";
@@ -236,6 +261,7 @@ paisForm.addEventListener("submit", async (event) => {
       mostrarMensaje("País guardado correctamente.");
       console.log(`País añadido: ${body.nombre || nombre} (ID: ${body.id || 'desconocido'})`);
     }
+    clearHeroState();
     exitEditMode();
   } catch (error) {
     mostrarMensaje(error.message, false);
@@ -256,6 +282,7 @@ usuarioForm.addEventListener("submit", async (event) => {
   }
 
   try {
+    setHeroState("loading");
     const id = usuarioIdInput.value;
     formStatusUsuario.textContent = id ? "Actualizando" : "Guardando";
     const url = id ? `${apiUsuarioBase}/${id}` : apiUsuarioBase;
@@ -282,6 +309,7 @@ usuarioForm.addEventListener("submit", async (event) => {
     } else {
       mostrarMensajeUsuario("Usuario guardado correctamente.");
     }
+    clearHeroState();
     exitUsuarioEditMode();
     event.target.reset();
   } catch (error) {
